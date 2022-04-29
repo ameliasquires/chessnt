@@ -1,0 +1,401 @@
+<html>
+  <head>
+    <title>chessn't</title>
+    <style>
+      html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+body::-webkit-scrollbar {
+  display: none;
+}
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 1%; /* Location of the box */
+ left:25%;
+  width: 50%; /* Full width */
+  height: 10%; /* Full height */
+  top:5%;
+ /* Enable scroll if needed */
+ border-radius:20px 0px 20px 0px;
+ text-align: center;
+ border-style: outset;
+
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(255,255,255,0.4); /* Black w/ opacity */
+}
+#animatedBackground {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index:-9;
+  background: url('./dots.png');
+
+  background-repeat: repeat;
+
+
+/*adjust s value for speed*/
+  animation: animatedBackground 500s linear infinite;
+}
+
+@keyframes animatedBackground {
+  
+  from {
+    background-position: 0 0;
+   
+  }
+/*use negative width if you want it to flow right to left else and positive for left to right*/
+  to {
+    background-position: -10000px -10000px;
+   
+  }
+}
+    </style>
+  </head>
+  <body>
+    <div id="animatedBackground">
+</div>
+
+    <script>
+      //colors
+      var board1 = '#232323'
+      var board2 = '#ff6633'
+      var highlight1 = '#177013'
+      var highlight2 = ''
+      var sides = '#474747'
+      //colors
+      //useful vars
+      var zoom = 100
+      var up = false
+      var down = false
+     let hex = {0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:'a',11:'b',12:'c',13:'d',14:'e',15:'f'}
+      //useful vars
+      //functions
+      function tohex(num){
+        let ret = ''
+        while(true){
+          
+          if(num<=9){
+            if(num>0){
+              ret+=num
+            }
+            break
+          }
+          ret+=hex[num%16]
+          
+          num=Math.floor(num/16)
+          
+        }
+        if(ret==''){ret='0'}
+        return(ret)
+      }
+      //functions
+      //board
+      var boardMain = 
+      [
+       ['',{'piece':'bridger','icon':'br+','loc':{'z':0}},{'piece':'rook','icon':'r','loc':{'z':0}},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+      ]
+      //board
+      //boardUnder
+      var boardUnder = 
+      [
+       [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+      ]
+      //boardUnder
+      //boardOver
+      var boardOver = 
+      [
+       [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{},{},{},{},{},{},{}],
+      ]
+      //boardOver
+      //popup func
+      document.write('<div id="modal"class="modal"></div>')
+      function popup(msg,timeUp){
+        let element = document.getElementById('modal')
+        element.innerHTML=msg
+
+        element.style.display='block'
+        setTimeout(function() { element.style.display='none' }, timeUp);
+      }
+      
+      //popup func
+      //del temp
+      function deltemp(){
+        for(let x in boardMain){
+            for(let y in boardMain[x]){
+              if(boardMain[x][y].type=='temp'){
+                console.log(boardMain[x][y])
+                boardMain[x][y]=''
+
+              }
+            }
+          }
+          loadb()
+      }
+      //del temp
+      //move
+      function move(fromR,fromC,toR,toC,z,toz){
+        
+
+        if(z==1){
+          //boardOver
+        } else if(z==-1) {
+          //boardUnder
+        } else {
+          console.log(boardMain[toR][toC])
+          console.log(boardMain[fromR][fromC])
+          boardMain[toR][toC]=boardMain[fromR][fromC]
+          
+          deltemp()
+          boardMain[fromR][fromC]={}
+          
+          loadb()
+          //del temp
+          
+        }
+
+      }
+      //move
+      //show moves
+      function showmoves(row,col,z){
+        let board = boardMain
+
+        if(z==1){
+          board=boardOver
+        } else if(z==-1) {
+          board=boardUnder
+        }
+        let elem = document.getElementById(row+''+col)
+        
+        elem.addEventListener('click', function(){ loadb();deltemp() } )
+
+        let piece = board[row][col]
+        switch(piece.piece){
+          case'rook':
+          for(let c in board[row]){ //sides
+            let elem = document.getElementById(row+c)//maybe change to string
+            if(board[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row,c,z,z) } )
+            }
+          }
+          for(let r in board){ // up and down
+            let elem = document.getElementById(r+col)//maybe change to string
+            if(board[r][col]!='temp'&&board[r][col]!=''&&r+''+col!=row+''+col){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,r,col,z,z) } )
+            }
+          }
+          
+          break;
+          case'bridger':
+          elem = document.getElementById(row+1+''+col)//maybe change to string
+          if(elem!=null&&board[row+1][col]!=''){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row+1,col,z,z) } )
+            }else if(row!=0) {
+              if(board[row+1]==undefined){
+                board.push([])
+                for(let zz = 0;zz!=col;zz++){
+                  board[row+1].push('')
+                }
+              }
+              board[row+1][col]={'type':'temp','life':-1}
+              
+              loadb()
+              showmoves(row,col,z)
+            }
+           elem = document.getElementById(row-1+''+col)//maybe change to string
+           if(elem!=null&&board[row-1][col]!=''){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row-1,col,z,z) } )
+            }else if(row!=0) {
+              board[row-1][col]={'type':'temp','life':-1}
+              
+              loadb()
+              showmoves(row,col,z)
+            }
+            elem = document.getElementById((row+1)+''+(col+1))//maybe change to string
+            
+            if(elem!=null){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row+1,col+1,z,z) } )
+            }
+            elem = document.getElementById((row+1)+''+(col-1))//maybe change to string
+            
+            if(elem!=null){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row+1,col-1,z,z) } )
+            }
+            elem = document.getElementById((row-1)+''+(col+1))//maybe change to string
+            
+            if(elem!=null){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row-1,col+1,z,z) } )
+            }
+            elem = document.getElementById((row-1)+''+(col-1))//maybe change to string
+            
+            if(elem!=null){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row-1,col-1,z,z) } )
+            }
+            elem = document.getElementById((row)+''+(col+1))//maybe change to string
+            
+            if(elem!=null&&board[row][col+1]!=''){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row,col+1,z,z) } )
+            }else if(col!=0) {
+              if(board[row][col+1]==undefined){
+                for(let xx = board[row].length;xx!=col+1;xx++){
+                  board[row].push('')
+                }
+              }
+              board[row][col+1]={'type':'temp','life':-1}
+              console.log('placed')
+              loadb()
+              showmoves(row,col,z)
+            }
+            elem = document.getElementById((row)+''+(col-1))//maybe change to string
+            
+            if(elem!=null&&board[row][col-1]!=''){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row,col-1,z,z) } )
+            }else if(col!=0) {
+              board[row][col-1]={'type':'temp','life':-1}
+              
+              loadb()
+              showmoves(row,col,z)
+            }
+           
+          break;
+        }
+      }
+      //show moves
+      //display board
+      
+      document.write('<div id="main"></div>')
+      function loadb(){
+        let element = document.getElementById('main')
+        board=boardMain
+       if(up){
+         board=boardOver
+       }else if(down){
+         board=boardUnder
+       }
+      
+      let bod = ('<div style="zoom:'+zoom+'%"><table style="table-layout:fixed;width:0%">')
+        const lengths = board.map(a=>a.length);
+lengths.indexOf(Math.max(...lengths));
+        largest = lengths.sort((a,b)=>a-b).reverse()[0];
+
+      for(let r = 0;r!=largest;r++){
+       
+        if(r==0){
+          bod+=('<th style="user-select: none;height: 20px;width: 20px;background-color: grey;"></th>')
+        }
+         bod+=('<th style="user-select: none;height: 20px;width: 50px;background-color: '+sides+';">'+tohex(r)+'</th>') 
+        
+      }
+      for(let r in board){
+        
+      
+        
+        
+        bod+=('<tr>')
+        
+        bod+=('<td style="user-select: none;height: 50px;width: 20px;background-color: '+sides+';">'+tohex(r)+'</td>')
+        
+        for(let c in board[r]){
+          board1=(board1)
+          
+          if(r%2==0&&c%2==0){
+            primary = true
+          } else if((r%2!=0&&c%2==0)){
+            primary=false
+          }
+        if(r%2==0&&c%2!=0){
+            primary = false
+          } else if((r%2!=0&&c%2!=0)){
+            primary=true
+          }
+          if(JSON.stringify(board[r][c])==JSON.stringify({})) {
+            if(primary){
+              
+            bod+=('<td id="'+r+c+'" style="user-select: none;height: 50px;width: 50px;background-color: '+board1+';"></td>')
+            }else{
+            bod+=('<td id="'+r+c+'" style="user-select: none;height: 50px;width: 50px;background-color: '+board2+';"></td>') 
+            }
+          } else if(board[r][c]==''){
+            bod+=('<td  id="'+r+c+'" style="opacity:0;user-select: none;height: 50px;width: 50px;"></td>') 
+          }else if(board[r][c].type=='temp'){
+            if(board[r][c].life==0){
+              bod+=('<td  id="'+r+c+'" style="opacity:0;user-select: none;height: 50px;width: 50px;"></td>') 
+              board[r][c]=''
+            } else {
+            board[r][c].life-=1
+            bod+=('<td  id="'+r+c+'" style="user-select: none;height: 50px;width: 50px;background-color:red;"></td>') 
+            }
+          }else{
+            if(primary){
+            bod+=('<td onclick="showmoves('+r+','+c+','+board[r][c].loc.z+')" id="'+r+c+'"style="user-select: none;height: 50px;width: 50px;color:white;background-color: '+board1+';">'+board[r][c].icon+'</td>')
+            }else{
+            bod+=('<td onclick="showmoves('+r+','+c+','+board[r][c].loc.z+')" id="'+r+c+'" style="user-select: none;height: 50px;width: 50px;color:white;background-color: '+board2+';">'+board[r][c].icon+'</td>') 
+            }
+          }
+          //primary=!primary
+        }
+        
+          
+        bod+=('</tr>')
+        
+           
+      }
+      bod+=('</table></div>')
+      
+        bod+=('<div onclick="zoom+=10;loadb()" id="topbar" style="position:fixed;left:0%;top:50%;user-select: none;background:#1f1f1f;width:2%;height:10%;border-radius: 5px 5px 0px 0px;color:white"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">+</center></div>')
+      bod+=('<div onclick="if(zoom>70){zoom-=10;loadb()}else{popup(\'cannot zoom out any more:(\', 1000)}" id="topbar" style="position:fixed;left:0%;top:60%;user-select: none;background:#000;width:2%;height:10%;border-radius: 0px 0px 5px 5px;color:white;"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">-</center></div>')
+      bod+=('<div onclick="if(down){down=false;}else{up=true;}loadb()" id="topbar" style="position:fixed;left:1.5%;top:55%;user-select: none;background:#5f5f5f;width:2%;height:6%;border-radius: 5px 5px 0px 0px;color:white"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">&#9650;</center></div>')
+      bod+=('<div onclick="if(up){up=false;}else{down=true;}loadb()" id="topbar" style="position:fixed;left:1.5%;top:60%;user-select: none;background:#3f3f3f;width:2%;height:6%;border-radius: 0px 0px 5px 5px;color:white;"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">&#9660;</center></div>')
+        element.innerHTML = bod
+          }
+      //display board
+      //zoom button
+      //zoom button
+      //start function
+             // 
+      loadb()
+     
+    </script>
+    
+  </body>
+</html>
