@@ -2,7 +2,7 @@
 
 [view it here](https://squiresgrant.github.io/chessnt/)
 
-[more info](readme)
+[more info](..)
 
 #### todo:
 -finish readme file
