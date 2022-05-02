@@ -99,7 +99,7 @@ body::-webkit-scrollbar {
       //board
       var boardMain = 
       [
-       ['',{},{},{},{'piece':'bridger','icon':'br+','loc':{'z':0}},{},{},{'piece':'bridger','icon':'br+','loc':{'z':0}},{},{},{},{},{},{},{},{},{},{},{},{},{}],
+       [{},{},{},{},{'piece':'bridger','icon':'br+','loc':{'z':0}},{},{},{'piece':'bridger','icon':'br+','loc':{'z':0}},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
@@ -236,6 +236,11 @@ body::-webkit-scrollbar {
                   board[row+1].push('')
                 }
               }
+              if(board[row+1][col]==undefined){
+                for(let zz = board[row+1].length;zz!=col;zz++){
+                  board[row+1].push('')
+                }
+              }
               board[row+1][col]={'type':'temp','life':-1}
               
               loadb()
@@ -246,6 +251,17 @@ body::-webkit-scrollbar {
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row-1,col,z,z) } )
             }else if(row!=0) {
+              if(board[row-1]==undefined){
+                board.push([])
+                for(let zz = 0;zz!=col;zz++){
+                  board[row-1].push('')
+                }
+              }
+              if(board[row-1][col]==undefined){
+                for(let zz = board[row-1].length;zz!=col;zz++){
+                  board[row-1].push('')
+                }
+              }
               board[row-1][col]={'type':'temp','life':-1}
               
               loadb()
