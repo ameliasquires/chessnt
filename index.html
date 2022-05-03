@@ -63,6 +63,7 @@ body::-webkit-scrollbar {
 </div>
 
     <script>
+
       //colors
       var board1 = '#232323'
       var board2 = '#ff6633'
@@ -229,7 +230,7 @@ body::-webkit-scrollbar {
           if(elem!=null&&board[row+1][col]!=''){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row+1,col,z,z) } )
-            }else if(row!=0) {
+            }else  {
               if(board[row+1]==undefined){
                 board.push([])
                 for(let zz = 0;zz!=col;zz++){
@@ -250,7 +251,7 @@ body::-webkit-scrollbar {
            if(elem!=null&&board[row-1][col]!=''){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row-1,col,z,z) } )
-            }else if(row!=0) {
+            }else if(row>0) {
               if(board[row-1]==undefined){
                 board.push([])
                 for(let zz = 0;zz!=col;zz++){
@@ -312,7 +313,7 @@ body::-webkit-scrollbar {
             if(elem!=null&&board[row][col-1]!=''){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row,col-1,z,z) } )
-            }else if(col!=0) {
+            }else {
               board[row][col-1]={'type':'temp','life':-1}
               
               loadb()
