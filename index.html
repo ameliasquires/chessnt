@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>chessn't</title>
+    <link rel="icon" href="icon.png">
     <style>
       html,
 body {
@@ -100,7 +101,7 @@ body::-webkit-scrollbar {
       //board
       var boardMain = 
       [
-       [{},{},{},{},{'piece':'bridger','icon':'br+','loc':{'z':0}},{},{},{'piece':'bridger','icon':'br+','loc':{'z':0}},{}],
+       [{},{},{},{},{'piece':'bridger','icon':'br+','color':'white','loc':{'z':0}},{},{},{'piece':'rook','icon':'r','color':'white','loc':{'z':0}},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
@@ -209,6 +210,7 @@ body::-webkit-scrollbar {
         let piece = board[row][col]
         switch(piece.piece){
           case'rook':
+          /*
           for(let c in board[row]){ //sides
             let elem = document.getElementById(row+c)//maybe change to string
             if(board[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
@@ -223,7 +225,40 @@ body::-webkit-scrollbar {
               elem.addEventListener('click', function(){ move(row,col,r,col,z,z) } )
             }
           }
-          
+          */
+         for(let r = row;r!=board.length;r++){
+           let elem = document.getElementById(r+''+col)
+           if(board[r][col]!=null&&board[r][col].color==board[row][col].color&&r+''+col!=row+''+col){break}
+           if(elem!=null&&[r][col]!='temp'&&board[r][col]!=''&&r+''+col!=row+''+col){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,r,col,z,z) } )
+            }
+         }
+         for(let r = row;r!=-1;r--){
+           let elem = document.getElementById(r+''+col)
+           if(elem!=null&&board[r][col].color==board[row][col].color&&r+''+col!=row+''+col){break}
+           if(elem!=null&&[r][col]!='temp'&&board[r][col]!=''&&r+''+col!=row+''+col){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,r,col,z,z) } )
+            }
+         }
+         for(let c = col;c!=board[row].length;c++){
+           let elem = document.getElementById(row+''+c)
+           if(board[row][c].color==board[row][col].color&&row+''+c!=row+''+col){break}
+           if(elem!=null&&[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row,c,z,z) } )
+            }
+         }
+         for(let c = col;c!=-1;c--){
+           let elem = document.getElementById(row+''+c)
+           if(board[row][c].color==board[row][col].color&&row+''+c!=row+''+col){break}
+           if(elem!=null&&[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
+              elem.style.backgroundColor=highlight1
+              elem.addEventListener('click', function(){ move(row,col,row,c,z,z) } )
+            }
+         }
+          //console.log(row + ''+board.length)
           break;
           case'bridger':
           elem = document.getElementById(row+1+''+col)//maybe change to string

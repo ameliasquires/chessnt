@@ -1,0 +1,23 @@
+{
+  "name": "chessnt",
+  "version": "1.0.0",
+  "description": "[view it here](https://squiresgrant.github.io/chessnt/)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/squiresgrant/chessnt.git"
+  },
+  "author": "grant squires",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/squiresgrant/chessnt/issues"
+  },
+  "homepage": "https://github.com/squiresgrant/chessnt#readme",
+  "dependencies": {
+    "electron": "^18.2.0"
+  }
+}
