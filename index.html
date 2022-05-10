@@ -30,6 +30,23 @@ body::-webkit-scrollbar {
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(255,255,255,0.4); /* Black w/ opacity */
 }
+.join-online {
+
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 1%; /* Location of the box */
+ right:10%;
+  width: 20%; /* Full width */
+  height: 30%; /* Full height */
+  top:25%;
+ /* Enable scroll if needed */
+ border-radius:20px 0px 20px 0px;
+ text-align: center;
+ border-style: outset;
+
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(255,255,255,0.4); /* Black w/ opacity */
+}
 #animatedBackground {
   width: 100%;
   height: 100%;
@@ -66,12 +83,62 @@ body::-webkit-scrollbar {
 
     <script>
 var peer = new Peer();
-peer.on('connection', function(conn) {
-  conn.on('data', function(data){
-    // Will print 'hi!'
-    console.log(data);
+var conn = null
+peer.on('connection', function(con) {
+  conn = con
+  con.on('data', function(data){
+    data=JSON.parse(data)
+    if(data.type=='move'){
+      //do the move
+    } else if(data.type=='err'){
+      console.log(data)
+    }
+    
   });
 });
+function ihate(con,hops){
+  if(con.peerConnection.connectionState=='connected'){
+    return(true)
+  } else if(hops==0){
+    return(false)
+  }
+  window.setTimeout( () => { ihate(con,hops-1); }, 100);
+}
+
+async function peerCon(id){
+  conn = peer.connect(id)
+  console.log(conn)
+  setTimeout(() => {
+    
+  
+  if(conn.peerConnection.connectionState!='connected'){
+    
+    console.log(conn.peerConnection.connectionState)
+    
+    let elem = document.getElementsByClassName('join-online')[0]
+    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></form>'
+  
+  } else {
+  let elem = document.getElementsByClassName('join-online')[0]
+  elem.style.display='none'
+  }
+}, 1000);
+}
+function foo(){
+  console.log(peer.id)
+  if(peer.id==null){
+  setTimeout(function(){
+    foo()
+
+},1000);
+  } else {
+    let elem = document.getElementsByClassName('join-online')[0]
+    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></form>'
+} 
+  
+}
+foo()
+document.write('<div class="join-online"></div>')
       //colors
       var board1 = '#232323'
       var board2 = '#ff6633'
@@ -459,7 +526,8 @@ lengths.indexOf(Math.max(...lengths));
       //start function
              // 
       loadb()
-     
+      
+
     </script>
     
   </body>
