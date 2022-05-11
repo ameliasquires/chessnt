@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/squiresgrant/chessnt#readme",
   "dependencies": {
-    "electron": "^18.2.0"
+    "electron": "^18.2.0",
+    "exec": "^0.2.1",
+    "nexe": "^4.0.0-beta.19"
   },
   "devDependencies": {
     "electron-packager": "^15.5.1"
