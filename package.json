@@ -19,5 +19,8 @@
   "homepage": "https://github.com/squiresgrant/chessnt#readme",
   "dependencies": {
     "electron": "^18.2.0"
+  },
+  "devDependencies": {
+    "electron-packager": "^15.5.1"
   }
 }

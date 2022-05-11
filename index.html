@@ -2,7 +2,7 @@
   <head>
     <title>chessn't</title>
     <link rel="icon" href="icon.png">
-    <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script> <!-- thank you to these kind people :D -->
+    <script src="https://unpkg.com/peerjs@1.3.2/dist/peerjs.min.js"></script> <!-- thank you to these kind people :D --> <!--nvm i spent 6 hours trying to make it work, i take the thanks back-->
     <style>
       html,
 body {
@@ -75,6 +75,11 @@ body::-webkit-scrollbar {
    
   }
 }
+input {
+  padding: 0.2em; 
+  box-sizing: border-box;
+  width: 100% 
+} 
     </style>
   </head>
   <body>
@@ -82,97 +87,6 @@ body::-webkit-scrollbar {
 </div>
 
     <script>
-var peer = new Peer();
-var conn = null
-peer.on('connection', function(con) {
-  conn = con
-  con.on('data', function(data){
-    data=JSON.parse(data)
-    if(data.type=='move'){
-      //do the move
-    } else if(data.type=='err'){
-      console.log(data)
-    }
-    
-  });
-});
-function ihate(con,hops){
-  if(con.peerConnection.connectionState=='connected'){
-    return(true)
-  } else if(hops==0){
-    return(false)
-  }
-  window.setTimeout( () => { ihate(con,hops-1); }, 100);
-}
-
-async function peerCon(id){
-  conn = peer.connect(id)
-  console.log(conn)
-  setTimeout(() => {
-    
-  
-  if(conn.peerConnection.connectionState!='connected'){
-    
-    console.log(conn.peerConnection.connectionState)
-    
-    let elem = document.getElementsByClassName('join-online')[0]
-    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></form>'
-  
-  } else {
-  let elem = document.getElementsByClassName('join-online')[0]
-  elem.style.display='none'
-  }
-}, 1000);
-}
-function foo(){
-  console.log(peer.id)
-  if(peer.id==null){
-  setTimeout(function(){
-    foo()
-
-},1000);
-  } else {
-    let elem = document.getElementsByClassName('join-online')[0]
-    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></form>'
-} 
-  
-}
-foo()
-document.write('<div class="join-online"></div>')
-      //colors
-      var board1 = '#232323'
-      var board2 = '#ff6633'
-      var highlight1 = '#177013'
-      var highlight2 = ''
-      var sides = '#474747'
-      //colors
-      //useful vars
-      var zoom = 100
-      var up = false
-      var down = false
-     let hex = {0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:'a',11:'b',12:'c',13:'d',14:'e',15:'f'}
-      //useful vars
-      //functions
-      function tohex(num){
-        let ret = ''
-        while(true){
-          
-          if(num<=9){
-            if(num>0){
-              ret+=num
-            }
-            break
-          }
-          ret+=hex[num%16]
-          
-          num=Math.floor(num/16)
-          
-        }
-        if(ret==''){ret='0'}
-        return(ret)
-      }
-      //functions
-      //board
       var boardMain = 
       [
        [{},{},{},{},{'piece':'bridger','icon':'br+','color':'white','loc':{'z':0}},{},{},{'piece':'rook','icon':'r','color':'white','loc':{'z':0}},{}],
@@ -214,6 +128,125 @@ document.write('<div class="join-online"></div>')
         [{},{},{},{},{},{},{},{},{}],
       ]
       //boardOver
+      var peer = new Peer();
+var conn = null
+function ihate(con,hops){
+  if(con.peerConnection.connectionState=='connected'){
+    return(true)
+  } else if(hops==0){
+    return(false)
+  }
+  window.setTimeout( () => { ihate(con,hops-1); }, 100);
+}
+function lonelyMf(){
+  //HAHA NO FRIENDS OR BITCHES
+  //no maidnes 
+  conn = 'dontwannatalkaboutit'
+  //mf has a negative snapscore
+  let elem = document.getElementsByClassName('join-online')[0]
+  elem.style.display='none'
+  //he probably covers his mouth when he laughs
+  //doesnt even use ctrl-shift-a
+
+}
+function peerCon(id){
+  conn = peer.connect(id)
+  console.log(conn)
+  setTimeout(() => {
+    
+  
+  if(conn.peerConnection.connectionState!='connected'){
+    
+    console.log(conn.peerConnection.connectionState)
+    
+    let elem = document.getElementsByClassName('join-online')[0]
+    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></br></form><button onclick="lonelyMf()"> or play by yourself</button>'
+  
+  } else {
+  let elem = document.getElementsByClassName('join-online')[0]
+  elem.style.display='none'
+  conn.send(JSON.stringify({'type':'con','id':peer.id}))
+  }
+}, 5000);
+}
+function setb(m,o,u){
+  boardMain=m
+      boardOver=o
+      boardUnder=u
+      loadb()
+}
+peer.on('connection', function(con) {
+  console.log(con)
+  con.send({'type':'err'})
+  con.on('data', function(data){
+
+    data=JSON.parse(data)
+    console.log(data)
+    if(data.type=='move'){
+      //move(data.fromR,data.fromC,data.toR,data.toC,data.z,data.toz,con,false)
+      setb(data.main,data.over,board.under)
+      
+      //do the move
+    } else if(data.type=='err'){
+      console.log(data)
+    } else if(data.type=='con'){
+      peerCon(data.id)
+      //console.log('connect')
+    }
+    
+  });
+});
+peer.on('disconnected', function(con) {console.log(true)})
+function foo(){
+  console.log(peer.id)
+  if(peer.id==null){
+  setTimeout(function(){
+    foo()
+
+},1000);
+  } else {
+    let elem = document.getElementsByClassName('join-online')[0]
+    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></br></form><button onclick="lonelyMf()"> or play by yourself</button>'
+  } 
+  
+}
+foo()
+document.write('<div class="join-online"></div>')
+      //colors
+      var board1 = '#232323'
+      var board2 = '#ff6633'
+      var highlight1 = '#177013'
+      var highlight2 = ''
+      var sides = '#474747'
+      //colors
+      //useful vars
+      var zoom = 100
+      var up = false
+      var down = false
+     let hex = {0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:'a',11:'b',12:'c',13:'d',14:'e',15:'f'}
+      //useful vars
+      //functions
+      function tohex(num){
+        let ret = ''
+        while(true){
+          
+          if(num<=9){
+            if(num>0){
+              ret+=num
+            }
+            break
+          }
+          ret+=hex[num%16]
+          
+          num=Math.floor(num/16)
+          
+        }
+        if(ret==''){ret='0'}
+        return(ret)
+      }
+      //functions
+      //board
+      
       //popup func
       document.write('<div id="modal"class="modal"></div>')
       function popup(msg,timeUp){
@@ -243,9 +276,9 @@ document.write('<div class="join-online"></div>')
       }
       //del temp
       //move
-      function move(fromR,fromC,toR,toC,z,toz){
-        console.log('move')
-
+      function move(fromR,fromC,toR,toC,z,toz,con = conn,shouldi = true){
+        if(conn=='dontwannatalkaboutit'||conn.open){
+        
         if(z==1){
           //boardOver
         } else if(z==-1) {
@@ -264,8 +297,14 @@ document.write('<div class="join-online"></div>')
           }
           
         }
+        if(conn!='dontwannatalkaboutit'){
+          if(shouldi){
+        //conn.send(JSON.stringify({'type':'move','fromR':fromR,'fromC':fromC,'toR':toR,'toC':toC,'z':z,'toz':toz}))
+        conn.send(JSON.stringify({'type':'move','main':boardMain,'over':boardOver,'under':boardUnder}))
         
-
+      }}//console.log(conn)
+        
+      }
       }
       //move
       //show moves
