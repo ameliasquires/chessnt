@@ -80,6 +80,79 @@ input {
   box-sizing: border-box;
   width: 100% 
 } 
+
+
+/* please note, i didn't make this button, i dont do frontend */
+button{
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+button:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button-85 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+button:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}    
+
+/* Parent background */
+
+
     </style>
   </head>
   <body>
@@ -97,7 +170,7 @@ input {
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
-        [{},{},{},{},{},{},{},{},{}],
+        [{},{},{'piece':'bridger','icon':'br+','color':'black','loc':{'z':0}},{},{},{'piece':'rook','icon':'r','color':'black','loc':{'z':0}},{},{},{}],
       ]
       //board
       //boardUnder
@@ -130,6 +203,18 @@ input {
       //boardOver
       var peer = new Peer();
 var conn = null
+peer.color=null
+//popup func
+document.write('<div id="modal"class="modal"></div>')
+      function popup(msg,timeUp){
+        let element = document.getElementById('modal')
+        element.innerHTML=msg
+
+        element.style.display='block'
+        setTimeout(function() { element.style.display='none' }, timeUp);
+      }
+      
+      //popup func
 function ihate(con,hops){
   if(con.peerConnection.connectionState=='connected'){
     return(true)
@@ -145,27 +230,36 @@ function lonelyMf(){
   //mf has a negative snapscore
   let elem = document.getElementsByClassName('join-online')[0]
   elem.style.display='none'
+  document.getElementById("main").style.webkitFilter = "blur(0px)";
+  document.getElementById("bblock").style.display='none';
+  peer.color='a'
   //he probably covers his mouth when he laughs
   //doesnt even use ctrl-shift-a
 
 }
-function peerCon(id){
+function peerCon(id,again = true){
   conn = peer.connect(id)
   console.log(conn)
+  popup('attempting connection '+'(testing the water)'.fontsize('1.5px'),5000)
   setTimeout(() => {
     
   
   if(conn.peerConnection.connectionState!='connected'){
-    
+    popup('<div style="color:red;">connection failed!</div>',2000)
     console.log(conn.peerConnection.connectionState)
     
     let elem = document.getElementsByClassName('join-online')[0]
-    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></br></form><button onclick="lonelyMf()"> or play by yourself</button>'
+    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input style="background-color:#white;opacity:.5;"type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></br></form><button onclick="lonelyMf()"> or play by yourself</button>'
   
   } else {
+    if(peer.color==null){
+  peer.color='white'
+    }
   let elem = document.getElementsByClassName('join-online')[0]
+  document.getElementById("main").style.webkitFilter = "blur(0px)";
   elem.style.display='none'
-  conn.send(JSON.stringify({'type':'con','id':peer.id}))
+  document.getElementById("bblock").style.display='none';
+  conn.send(JSON.stringify({'type':'con','id':peer.id,'color':'black','s':again}))
   }
 }, 5000);
 }
@@ -176,7 +270,7 @@ function setb(m,o,u){
       loadb()
 }
 peer.on('connection', function(con) {
-  console.log(con)
+  
   con.send({'type':'err'})
   con.on('data', function(data){
 
@@ -190,7 +284,14 @@ peer.on('connection', function(con) {
     } else if(data.type=='err'){
       console.log(data)
     } else if(data.type=='con'){
-      peerCon(data.id)
+      if(data.s){
+      
+      peerCon(data.id,false)
+      if(peer.color==null){
+      peer.color=data.color
+      }
+      popup('you are '+peer.color+'!', 5000)
+    }
       //console.log('connect')
     }
     
@@ -206,14 +307,15 @@ function foo(){
 },1000);
   } else {
     let elem = document.getElementsByClassName('join-online')[0]
-    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></br></form><button onclick="lonelyMf()"> or play by yourself</button>'
+    elem.innerHTML='your key is </br><b>'+peer.id+'<\/b></br> or, enter someone else\'s </br><form id="join"onsubmit="peerCon(this.children[1].value);return false" onsubmit=""></br><input style="background-color:#white;opacity:.5;"type="text" id="peer.id" name="peer.id"><input type="submit" style="display: none" /></br></form><button onclick="lonelyMf()"> or play by yourself</button>'
   } 
   
 }
 foo()
 document.write('<div class="join-online"></div>')
+
       //colors
-      var board1 = '#232323'
+      var board1 = '#2b2b2b'
       var board2 = '#ff6633'
       var highlight1 = '#177013'
       var highlight2 = ''
@@ -245,20 +347,7 @@ document.write('<div class="join-online"></div>')
         return(ret)
       }
       //functions
-      //board
-      
-      //popup func
-      document.write('<div id="modal"class="modal"></div>')
-      function popup(msg,timeUp){
-        let element = document.getElementById('modal')
-        element.innerHTML=msg
-
-        element.style.display='block'
-        setTimeout(function() { element.style.display='none' }, timeUp);
-      }
-      
-      //popup func
-      //del temp
+      //board //del temp
       function deltemp(){
         for(let x in boardMain){
             for(let y in boardMain[x]){
@@ -309,6 +398,7 @@ document.write('<div class="join-online"></div>')
       //move
       //show moves
       function showmoves(row,col,z){
+        
         let board = boardMain
 
         if(z==1){
@@ -316,8 +406,9 @@ document.write('<div class="join-online"></div>')
         } else if(z==-1) {
           board=boardUnder
         }
+        if(board[row][col].color==peer.color||peer.color=='a'){
         let elem = document.getElementById(row+''+col)
-        
+        elem.style.backgroundColor="#aa8800"
         elem.addEventListener('click', function(){ deltemp();loadb(); } )
 
         let piece = board[row][col]
@@ -342,42 +433,66 @@ document.write('<div class="join-online"></div>')
          for(let r = row;r!=board.length;r++){
            let elem = document.getElementById(r+''+col)
            if(board[r][col]!=null&&board[r][col].color==board[row][col].color&&r+''+col!=row+''+col){break}
-           if(elem!=null&&[r][col]!='temp'&&board[r][col]!=''&&r+''+col!=row+''+col){
+           if(board[r][col]!=null&&elem!=null&&[r][col]!='temp'&&board[r][col]!=''&&r+''+col!=row+''+col){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,r,col,z,z) } )
+            }
+            color=board[row][col].color
+            if(board[r][col]!=null&&board[r][col].color!=color&&(board[r][col].color=='black'||board[r][col].color=='white')||board[r][col]!=null&&board[r][col]==''){
+              
+              break
             }
          }
          for(let r = row;r!=-1;r--){
            let elem = document.getElementById(r+''+col)
-           if(elem!=null&&board[r][col].color==board[row][col].color&&r+''+col!=row+''+col){break}
+           if(board[r][col]!=null&&elem!=null&&board[r][col].color==board[row][col].color&&r+''+col!=row+''+col){break}
            if(elem!=null&&[r][col]!='temp'&&board[r][col]!=''&&r+''+col!=row+''+col){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,r,col,z,z) } )
+            }
+            color=board[row][col].color
+            if(board[r][col]!=null&&board[r][col].color!=color&&(board[r][col].color=='black'||board[r][col].color=='white')||board[r][col]!=null&&board[r][col]==''){
+              
+              break
             }
          }
          for(let c = col;c!=board[row].length;c++){
            let elem = document.getElementById(row+''+c)
            if(board[row][c].color==board[row][col].color&&row+''+c!=row+''+col){break}
-           if(elem!=null&&[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
+           if(board[row][c]!=null&&elem!=null&&[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row,c,z,z) } )
+            }
+            color=board[row][col].color
+            if(board[row][c]!=null&&board[row][c].color!=color&&(board[row][c].color=='black'||board[row][c].color=='white')||board[row][c]!=null&&board[row][c]==''){
+              
+              break
             }
          }
          for(let c = col;c!=-1;c--){
            let elem = document.getElementById(row+''+c)
            if(board[row][c].color==board[row][col].color&&row+''+c!=row+''+col){break}
-           if(elem!=null&&[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
+           if(board[row][c]!=null&&elem!=null&&[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row,c,z,z) } )
+            }
+            color=board[row][col].color
+            if(board[row][c]!=null&&board[row][c].color!=color&&(board[row][c].color=='black'||board[row][c].color=='white')||board[row][c]!=null&&board[row][c]==''){
+              
+              break
             }
          }
           //console.log(row + ''+board.length)
           break;
           case'bridger':
           elem = document.getElementById(row+1+''+col)//maybe change to string
+          let samep = (elem!=null&&board[row+1][col]!=null&&board[row][col].color==board[row+1][col].color)
+          //console.log(samep)
           if(elem!=null&&board[row+1][col]!=''){
+              if(!samep){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row+1,col,z,z) } )
+              }
             }else  {
               if(board[row+1]==undefined){
                 board.push([])
@@ -395,10 +510,13 @@ document.write('<div class="join-online"></div>')
               loadb()
               showmoves(row,col,z)
             }
+          
            elem = document.getElementById(row-1+''+col)//maybe change to string
+           samep = (row!=0&&col!=0&&board[row-1][col]!=undefined&&board[row][col].color==board[row-1][col].color)
            if(elem!=null&&board[row-1][col]!=''){
+             if(!samep){
               elem.style.backgroundColor=highlight1
-              elem.addEventListener('click', function(){ move(row,col,row-1,col,z,z) } )
+              elem.addEventListener('click', function(){ move(row,col,row-1,col,z,z) } )}
             }else if(row>0) {
               if(board[row-1]==undefined){
                 board.push([])
@@ -417,34 +535,35 @@ document.write('<div class="join-online"></div>')
               showmoves(row,col,z)
             }
             elem = document.getElementById((row+1)+''+(col+1))//maybe change to string
-            
-            if(elem!=null){
+            samep = (board[row+1][col+1]!=null&&board[row][col].color==board[row+1][col+1].color)
+            if(elem!=null&&!samep){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row+1,col+1,z,z) } )
             }
             elem = document.getElementById((row+1)+''+(col-1))//maybe change to string
-            
-            if(elem!=null){
+            samep = (col!=0&&board[row+1][col-1]!=null&&board[row][col].color==board[row+1][col-1].color)
+            if(elem!=null&&!samep){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row+1,col-1,z,z) } )
             }
             elem = document.getElementById((row-1)+''+(col+1))//maybe change to string
-            
-            if(elem!=null){
+            samep = (row!=0&&board[row-1][col+1]!=null&&board[row][col].color==board[row-1][col+1].color)
+            if(elem!=null&&!samep){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row-1,col+1,z,z) } )
             }
             elem = document.getElementById((row-1)+''+(col-1))//maybe change to string
-            
-            if(elem!=null){
+            samep = (row!=0&&col!=0&&board[row-1][col-1]!=null&&board[row][col].color==board[row-1][col-1].color)
+            if(elem!=null&&!samep){
               elem.style.backgroundColor=highlight1
               elem.addEventListener('click', function(){ move(row,col,row-1,col-1,z,z) } )
             }
             elem = document.getElementById((row)+''+(col+1))//maybe change to string
-            
+            samep = (board[row][col+1]!=null&&board[row][col].color==board[row][col+1].color)
             if(elem!=null&&board[row][col+1]!=''){
+              if(!samep){
               elem.style.backgroundColor=highlight1
-              elem.addEventListener('click', function(){ move(row,col,row,col+1,z,z) } )
+              elem.addEventListener('click', function(){ move(row,col,row,col+1,z,z) } )}
             }else if(col!=0) {
               if(board[row][col+1]==undefined){
                 for(let xx = board[row].length;xx!=col+1;xx++){
@@ -457,10 +576,11 @@ document.write('<div class="join-online"></div>')
               showmoves(row,col,z)
             }
             elem = document.getElementById((row)+''+(col-1))//maybe change to string
-            
+            samep = (col!=0&&board[row][col-1]!=null&&board[row][col].color==board[row][col-1].color)
             if(elem!=null&&board[row][col-1]!=''){
+              if(!samep){
               elem.style.backgroundColor=highlight1
-              elem.addEventListener('click', function(){ move(row,col,row,col-1,z,z) } )
+              elem.addEventListener('click', function(){ move(row,col,row,col-1,z,z) } )}
             }else {
               board[row][col-1]={'type':'temp','life':-1}
               
@@ -470,11 +590,12 @@ document.write('<div class="join-online"></div>')
            
           break;
         }
-      }
+      }}//
       //show moves
       //display board
       
-      document.write('<div id="main"></div>')
+      document.write('<div id="main" style="filter: blur(2px);"></div>')
+      document.write('<div id="bblock"style="position:absolute;left:0%;top:0%;background-color:rgba(0,0,0,0.6);width:100%;height:100%;filter: blur(20px);"></div>')
       function loadb(){
         let element = document.getElementById('main')
         board=boardMain
@@ -538,9 +659,10 @@ lengths.indexOf(Math.max(...lengths));
             }
           }else{
             if(primary){
-            bod+=('<td onclick="showmoves('+r+','+c+','+board[r][c].loc.z+')" id="'+r+""+c+'"style="user-select: none;height: 50px;width: 50px;color:white;background-color: '+board1+';">'+board[r][c].icon+'</td>')
+              
+            bod+=('<td onclick="showmoves('+r+','+c+','+board[r][c].loc.z+')" id="'+r+""+c+'"style="user-select: none;height: 50px;width: 50px;color:'+board[r][c].color+';background-color: '+board1+';">'+board[r][c].icon+'</td>')
             }else{
-            bod+=('<td onclick="showmoves('+r+','+c+','+board[r][c].loc.z+')" id="'+r+""+c+'" style="user-select: none;height: 50px;width: 50px;color:white;background-color: '+board2+';">'+board[r][c].icon+'</td>') 
+            bod+=('<td onclick="showmoves('+r+','+c+','+board[r][c].loc.z+')" id="'+r+""+c+'" style="user-select: none;height: 50px;width: 50px;color:'+board[r][c].color+';background-color: '+board2+';">'+board[r][c].icon+'</td>') 
             }
           }
           //primary=!primary
@@ -553,12 +675,13 @@ lengths.indexOf(Math.max(...lengths));
       }
       bod+=('</table></div>')
       
-        bod+=('<div onclick="zoom+=10;loadb()" id="topbar" style="position:fixed;left:0%;top:50%;user-select: none;background:#1f1f1f;width:2%;height:10%;border-radius: 5px 5px 0px 0px;color:white"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">+</center></div>')
-      bod+=('<div onclick="if(zoom>70){zoom-=10;loadb()}else{popup(\'cannot zoom out any more:(\', 1000)}" id="topbar" style="position:fixed;left:0%;top:60%;user-select: none;background:#000;width:2%;height:10%;border-radius: 0px 0px 5px 5px;color:white;"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">-</center></div>')
-      bod+=('<div onclick="if(down){down=false;}else{up=true;}loadb()" id="topbar" style="position:fixed;left:1.5%;top:55%;user-select: none;background:#5f5f5f;width:2%;height:6%;border-radius: 5px 5px 0px 0px;color:white"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">&#9650;</center></div>')
-      bod+=('<div onclick="if(up){up=false;}else{down=true;}loadb()" id="topbar" style="position:fixed;left:1.5%;top:60%;user-select: none;background:#3f3f3f;width:2%;height:6%;border-radius: 0px 0px 5px 5px;color:white;"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">&#9660;</center></div>')
+      
         element.innerHTML = bod
           }
+      document.write('<div onclick="zoom+=10;loadb()" id="topbar" style="position:fixed;left:0%;top:50%;user-select: none;background:#1f1f1f;width:2%;height:10%;border-radius: 5px 5px 0px 0px;color:white"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">+</center></div>')
+      document.write('<div onclick="if(zoom>70){zoom-=10;loadb()}else{popup(\'cannot zoom out any more:(\', 1000)}" id="topbar" style="position:fixed;left:0%;top:60%;user-select: none;background:#000;width:2%;height:10%;border-radius: 0px 0px 5px 5px;color:white;"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">-</center></div>')
+      document.write('<div onclick="if(down){down=false;}else{up=true;}loadb()" id="topbar" style="position:fixed;left:1.5%;top:55%;user-select: none;background:#5f5f5f;width:2%;height:6%;border-radius: 5px 5px 0px 0px;color:white"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">&#9650;</center></div>')
+      document.write('<div onclick="if(up){up=false;}else{down=true;}loadb()" id="topbar" style="position:fixed;left:1.5%;top:60%;user-select: none;background:#3f3f3f;width:2%;height:6%;border-radius: 0px 0px 5px 5px;color:white;"><center style="position: absolute;top: 50%;left: 0;right: 0;margin-top: -9px;">&#9660;</center></div>')
       //display board
       //zoom button
       //zoom button
