@@ -320,6 +320,14 @@ document.write('<div class="join-online"></div>')
       var highlight1 = '#177013'
       var highlight2 = ''
       var sides = '#474747'
+      var imgs = {
+        'roxy':'https://i.pinimg.com/originals/b0/15/28/b01528ac9b5e11654f0ef354b7713bdb.jpg',
+        'eris':'https://i.pinimg.com/originals/42/43/e8/4243e865c6de7f60e277b2830efabb46.jpg',
+        'maha':'https://thicc.mywaifulist.moe/waifus/36367/297b3e2ed159607b2f0602c53590b2191d14cbb6973220a6dfb8027567d95e54_thumb.jpg',
+        'dia':'https://i.pinimg.com/736x/71/15/54/711554ac2dc9a3717497fd304baf1a46.jpg',
+        'tarte':'https://m.media-amazon.com/images/M/MV5BYzZkZGFkYzEtYzEzYi00NGY3LWFlNWItYWViZGM4YTM1ZDNhXkEyXkFqcGdeQXVyOTc4OTAwMjU@._V1_.jpg',
+        'chocola':'https://i.pinimg.com/550x/18/b7/35/18b7355acff8ad08fc2a2d4341abfb7c.jpg'
+      }
       //colors
       //useful vars
       var zoom = 100
@@ -647,6 +655,7 @@ lengths.indexOf(Math.max(...lengths));
             }else{
             bod+=('<td id="'+r+""+c+'" style="user-select: none;height: 50px;width: 50px;background-color: '+board2+';"></td>') 
             }
+           // background-image: url(\''+imgs.chocola+'\');background-size: cover;
           } else if(board[r][c]==''){
             bod+=('<td  id="'+r+""+c+'" style="opacity:0;user-select: none;height: 50px;width: 50px;"></td>') 
           }else if(board[r][c].type=='temp'){
