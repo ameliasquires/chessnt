@@ -160,9 +160,14 @@ button:after {
 </div>
 
     <script>
+      var pieces = [
+        {'piece':'bridger','icon':'br+','desc':'missing'},
+        {'piece':'rook','icon':'r','desc':'missing'},
+        {'piece':'pegasus','icon':'p+','desc':'missing'},
+    ]
       var boardMain = 
       [
-       [{},{},{},{},{'piece':'bridger','icon':'br+','color':'white','loc':{'z':0}},{},{},{'piece':'rook','icon':'r','color':'white','loc':{'z':0}},{}],
+       [{},{},{},{'piece':'pegasus','icon':'p+','color':'white','loc':{'z':0}},{'piece':'bridger','icon':'br+','color':'white','loc':{'z':0}},{},{},{'piece':'rook','icon':'r','color':'white','loc':{'z':0}},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
@@ -405,6 +410,7 @@ document.write('<div class="join-online"></div>')
       }
       //move
       //show moves
+      var showing = false
       function showmoves(row,col,z){
         
         let board = boardMain
@@ -417,10 +423,49 @@ document.write('<div class="join-online"></div>')
         if(board[row][col].color==peer.color||peer.color=='a'){
         let elem = document.getElementById(row+''+col)
         elem.style.backgroundColor="#aa8800"
-        elem.addEventListener('click', function(){ deltemp();loadb(); } )
+        showing=true
+        elem.addEventListener('click', function(){ deltemp();loadb();showing=false; } )
 
         let piece = board[row][col]
         switch(piece.piece){
+          case 'pegasus':
+          let elem = document.getElementById((row+3)+''+(col+3))
+          if(elem!=null){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row+3,col+3,z,z) } )
+          }
+          elem = document.getElementById((row-3)+''+(col+3))
+          if(elem!=null&&row-3>=0){
+          
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row-3,col+3,z,z) } )
+          }
+          elem = document.getElementById((row-3)+''+(col-3))
+          if(elem!=null&&row-3>=0&&col-3>=0){
+          
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row-3,col-3,z,z) } )
+          }
+          elem = document.getElementById((row+3)+''+(col-3))
+          if(elem!=null&&col-3>=0){
+          
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row+3,col-3,z,z) } )
+          }
+          elem = document.getElementById((row+2)+''+(col))
+          if(elem!=null){
+          
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row+2,col,z,z) } )
+          }
+          elem = document.getElementById((row-2)+''+(col))
+          if(elem!=null&&row-2>=0){
+          
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row-2,col,z,z) } )
+          }
+          
+          break;
           case'rook':
           /*
           for(let c in board[row]){ //sides
