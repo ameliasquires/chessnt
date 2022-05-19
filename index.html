@@ -164,10 +164,11 @@ button:after {
         {'piece':'bridger','icon':'br+','desc':'missing'},
         {'piece':'rook','icon':'r','desc':'missing'},
         {'piece':'pegasus','icon':'p+','desc':'missing'},
+        {'piece':'shovel_man','icon':'sm','desc':'missing'}, //can place squares that will allow pieces to mvoe up or down
     ]
       var boardMain = 
       [
-       [{},{},{},{'piece':'pegasus','icon':'p+','color':'white','loc':{'z':0}},{'piece':'bridger','icon':'br+','color':'white','loc':{'z':0}},{},{},{'piece':'rook','icon':'r','color':'white','loc':{'z':0}},{}],
+       [{},{},{'piece':'shovel_man','icon':'sm','color':'white','loc':{'z':0}},{'piece':'pegasus','icon':'p+','color':'white','loc':{'z':0}},{'piece':'bridger','icon':'br+','color':'white','loc':{'z':0}},{},{},{'piece':'rook','icon':'r','color':'white','loc':{'z':0}},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
         [{},{},{},{},{},{},{},{},{}],
@@ -369,7 +370,7 @@ document.write('<div class="join-online"></div>')
                 //console.log('deleted')
                 //console.log(boardMain[x][y])
                 boardMain[x][y]=''
-                console.log('del')
+                //console.log('del')
 
               }
             }
@@ -382,20 +383,119 @@ document.write('<div class="join-online"></div>')
         if(conn=='dontwannatalkaboutit'||conn.open){
         
         if(z==1){
+          if(toz==1){
+            if(Object.keys(boardOver[fromR][fromC]).length!=0){
+
+boardOver[toR][toC]=boardOver[fromR][fromC]
+boardOver[toR][toC].loc.z=toz
+//deltemp()
+boardOver[fromR][fromC]={}
+deltemp()
+loadb()
+
+//del temp
+}
+          } else if(toz==-1){
+            if(Object.keys(boardOver[fromR][fromC]).length!=0){
+
+boardUnder[toR][toC]=boardOver[fromR][fromC]
+boardUnder[toR][toC].loc.z=toz
+//deltemp()
+boardOver[fromR][fromC]={}
+deltemp()
+loadb()
+
+//del temp
+}
+          } else {
+          if(Object.keys(boardOver[fromR][fromC]).length!=0){
+
+          boardMain[toR][toC]=boardOver[fromR][fromC]
+          boardMain[toR][toC].loc.z=toz
+          //deltemp()
+          boardOver[fromR][fromC]={}
+          deltemp()
+          loadb()
+          
+          //del temp
+          }}
           //boardOver
         } else if(z==-1) {
+          if(toz==1){
+            if(Object.keys(boardUnder[fromR][fromC]).length!=0){
+
+boardOver[toR][toC]=boardUnder[fromR][fromC]
+boardOver[toR][toC].loc.z=toz
+//deltemp()
+boardUnder[fromR][fromC]={}
+deltemp()
+loadb()
+
+//del temp
+}
+          } else if(toz==-1){
+            if(Object.keys(boardUnder[fromR][fromC]).length!=0){
+
+boardUnder[toR][toC]=boardUnder[fromR][fromC]
+boardUnder[toR][toC].loc.z=toz
+//deltemp()
+boardUnder[fromR][fromC]={}
+deltemp()
+loadb()
+
+//del temp
+}
+          } else {
+          if(Object.keys(boardUnder[fromR][fromC]).length!=0){
+
+          boardMain[toR][toC]=boardUnder[fromR][fromC]
+          boardMain[toR][toC].loc.z=toz
+          //deltemp()
+          boardUnder[fromR][fromC]={}
+          deltemp()
+          loadb()
+          
+          //del temp
+          }
+          }
           //boardUnder
         } else {
+          if(toz==1){
+            if(Object.keys(boardMain[fromR][fromC]).length!=0){
+
+boardOver[toR][toC]=boardMain[fromR][fromC]
+boardOver[toR][toC].loc.z=toz
+//deltemp()
+boardMain[fromR][fromC]={}
+deltemp()
+loadb()
+
+//del temp
+}
+          } else if(toz==-1){
+            if(Object.keys(boardMain[fromR][fromC]).length!=0){
+
+boardUnder[toR][toC]=boardMain[fromR][fromC]
+boardUnder[toR][toC].loc.z=toz
+//deltemp()
+boardMain[fromR][fromC]={}
+deltemp()
+loadb()
+
+//del temp
+}
+          } else {
           if(Object.keys(boardMain[fromR][fromC]).length!=0){
 
           boardMain[toR][toC]=boardMain[fromR][fromC]
-          
+          boardMain[toR][toC].loc.z=toz
           //deltemp()
           boardMain[fromR][fromC]={}
           deltemp()
           loadb()
           
           //del temp
+          }
           }
           
         }
@@ -412,7 +512,7 @@ document.write('<div class="join-online"></div>')
       //show moves
       var showing = false
       function showmoves(row,col,z){
-        
+        //console.log(z)
         let board = boardMain
 
         if(z==1){
@@ -427,42 +527,107 @@ document.write('<div class="join-online"></div>')
         elem.addEventListener('click', function(){ deltemp();loadb();showing=false; } )
 
         let piece = board[row][col]
+        elem = ''
         switch(piece.piece){
+          case 'shovel_man':
+          elem = document.getElementById((row-2)+''+(col))
+          if(elem!=null&&board[row-2][col].color!=board[row][col].color&&row-2>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row-2,col,z,z) } )
+          }
+          elem = document.getElementById((row+2)+''+(col))
+          if(elem!=null&&board[row+2][col].color!=board[row][col].color&&row+2>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row+2,col,z,z) } )
+          }
+          elem = document.getElementById((row)+''+(col+2))
+          if(elem!=null&&board[row][col+2].color!=board[row][col].color&&col+2>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row,col+2,z,z) } )
+          }
+          elem = document.getElementById((row)+''+(col-2))
+          if(elem!=null&&board[row][col-2].color!=board[row][col].color&&col-2>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row,col-2,z,z) } )
+          }
+          elem = document.getElementById((row-1)+''+(col-1))
+          if(elem!=null&&board[row-1][col-1].color!=board[row][col].color&&col-1>=0&&row-1>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row-1,col-1,z,z) } )
+          }
+          elem = document.getElementById((row+1)+''+(col-1))
+          if(elem!=null&&board[row+1][col-1].color!=board[row][col].color&&col-1>=0&&row+1>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row+1,col-1,z,z) } )
+          }
+          elem = document.getElementById((row+1)+''+(col+1))
+          if(elem!=null&&board[row+1][col+1].color!=board[row][col].color&&col+1>=0&&row+1>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row+1,col+1,z,z) } )
+          }
+          elem = document.getElementById((row-1)+''+(col+1))
+          if(elem!=null&&board[row-1][col+1].color!=board[row][col].color&&col+1>=0&&row-1>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row-1,col+1,z,z) } )
+          }
+          break;
           case 'pegasus':
-          let elem = document.getElementById((row+3)+''+(col+3))
-          if(elem!=null){
+          elem = document.getElementById((row+1)+''+(col-2))
+          if(elem!=null&&board[row+1][col-2].color!=board[row][col].color&&col-2>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row+1,col-2,z,z) } )
+          }
+          elem = document.getElementById((row+1)+''+(col+2))
+          if(elem!=null&&board[row+1][col+2].color!=board[row][col].color&&col+2>=0){
+          elem.style.backgroundColor=highlight1
+          elem.addEventListener('click', function(){ move(row,col,row+1,col+2,z,z) } )
+          }
+          elem = document.getElementById((row+3)+''+(col+3))
+          if(elem!=null&&board[row+3][col+3].color!=board[row][col].color){
           elem.style.backgroundColor=highlight1
           elem.addEventListener('click', function(){ move(row,col,row+3,col+3,z,z) } )
           }
           elem = document.getElementById((row-3)+''+(col+3))
-          if(elem!=null&&row-3>=0){
+          if(elem!=null&&row-3>=0&&board[row-3][col+3].color!=board[row][col].color){
           
           elem.style.backgroundColor=highlight1
           elem.addEventListener('click', function(){ move(row,col,row-3,col+3,z,z) } )
           }
           elem = document.getElementById((row-3)+''+(col-3))
-          if(elem!=null&&row-3>=0&&col-3>=0){
+          if(elem!=null&&row-3>=0&&col-3>=0&&board[row-3][col-3].color!=board[row][col].color){
           
           elem.style.backgroundColor=highlight1
           elem.addEventListener('click', function(){ move(row,col,row-3,col-3,z,z) } )
           }
           elem = document.getElementById((row+3)+''+(col-3))
-          if(elem!=null&&col-3>=0){
+          if(elem!=null&&col-3>=0&&board[row+3][col-3].color!=board[row][col].color){
           
           elem.style.backgroundColor=highlight1
           elem.addEventListener('click', function(){ move(row,col,row+3,col-3,z,z) } )
           }
           elem = document.getElementById((row+2)+''+(col))
-          if(elem!=null){
+          if(elem!=null&&board[row+2][col].color!=board[row][col].color){
           
           elem.style.backgroundColor=highlight1
           elem.addEventListener('click', function(){ move(row,col,row+2,col,z,z) } )
           }
           elem = document.getElementById((row-2)+''+(col))
-          if(elem!=null&&row-2>=0){
+          if(elem!=null&&row-2>=0&&board[row-2][col].color!=board[row][col].color){
           
           elem.style.backgroundColor=highlight1
           elem.addEventListener('click', function(){ move(row,col,row-2,col,z,z) } )
+          }
+          elem = document.getElementById((row-1)+''+(col))
+          if(elem!=null&&row-1>=0&&z!=1){
+          
+          elem.style.backgroundColor='pink'
+          elem.addEventListener('click', function(){ move(row,col,row-1,col,z,z+1) } )
+          }
+          elem = document.getElementById((row+1)+''+(col))
+          if(elem!=null&&row+1>=0&&z!=-1){
+          
+          elem.style.backgroundColor='red'
+          elem.addEventListener('click', function(){ move(row,col,row+1,col,z,z-1) } )
           }
           
           break;
@@ -484,7 +649,7 @@ document.write('<div class="join-online"></div>')
           }
           */
          for(let r = row;r!=board.length;r++){
-           let elem = document.getElementById(r+''+col)
+           elem = document.getElementById(r+''+col)
            if(board[r][col]!=null&&board[r][col].color==board[row][col].color&&r+''+col!=row+''+col){break}
            if(board[r][col]!=null&&elem!=null&&[r][col]!='temp'&&board[r][col]!=''&&r+''+col!=row+''+col){
               elem.style.backgroundColor=highlight1
@@ -497,7 +662,7 @@ document.write('<div class="join-online"></div>')
             }
          }
          for(let r = row;r!=-1;r--){
-           let elem = document.getElementById(r+''+col)
+           elem = document.getElementById(r+''+col)
            if(board[r][col]!=null&&elem!=null&&board[r][col].color==board[row][col].color&&r+''+col!=row+''+col){break}
            if(elem!=null&&[r][col]!='temp'&&board[r][col]!=''&&r+''+col!=row+''+col){
               elem.style.backgroundColor=highlight1
@@ -510,7 +675,7 @@ document.write('<div class="join-online"></div>')
             }
          }
          for(let c = col;c!=board[row].length;c++){
-           let elem = document.getElementById(row+''+c)
+           elem = document.getElementById(row+''+c)
            if(board[row][c].color==board[row][col].color&&row+''+c!=row+''+col){break}
            if(board[row][c]!=null&&elem!=null&&[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
               elem.style.backgroundColor=highlight1
@@ -523,7 +688,7 @@ document.write('<div class="join-online"></div>')
             }
          }
          for(let c = col;c!=-1;c--){
-           let elem = document.getElementById(row+''+c)
+           elem = document.getElementById(row+''+c)
            if(board[row][c].color==board[row][col].color&&row+''+c!=row+''+col){break}
            if(board[row][c]!=null&&elem!=null&&[row][c]!='temp'&&board[row][c]!=''&&row+''+c!=row+''+col){
               elem.style.backgroundColor=highlight1
