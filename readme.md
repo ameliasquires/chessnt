@@ -1,6 +1,6 @@
 ## chessnt
 
-[view it here](https://squiresgrant.github.io/chessnt/)
+[view it here](https://ameliasquires.github.io/chessnt/)
 
 #### prerequisites(for the desktop app):
 -node.js
